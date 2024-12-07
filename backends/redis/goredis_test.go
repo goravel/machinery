@@ -13,9 +13,9 @@ import (
 	"github.com/goravel/machinery/tasks"
 )
 
-func getRedisG() iface.Backend {
+func getRedis() iface.Backend {
 	// host1:port1,host2:port2
-	redisURL := os.Getenv("REDIS_URL_GR")
+	redisURL := os.Getenv("REDIS_URL")
 	//redisPassword := os.Getenv("REDIS_PASSWORD")
 	if redisURL == "" {
 		return nil
@@ -24,8 +24,8 @@ func getRedisG() iface.Backend {
 	return backend
 }
 
-func TestGroupCompletedGR(t *testing.T) {
-	backend := getRedisG()
+func TestGroupCompleted(t *testing.T) {
+	backend := getRedis()
 	if backend == nil {
 		t.Skip()
 	}
@@ -81,8 +81,8 @@ func TestGroupCompletedGR(t *testing.T) {
 	}
 }
 
-func TestGetStateGR(t *testing.T) {
-	backend := getRedisG()
+func TestGetState(t *testing.T) {
+	backend := getRedis()
 	if backend == nil {
 		t.Skip()
 	}
@@ -139,8 +139,8 @@ func TestGetStateGR(t *testing.T) {
 	assert.NotNil(t, taskState.Results)
 }
 
-func TestPurgeStateGR(t *testing.T) {
-	backend := getRedisG()
+func TestPurgeState(t *testing.T) {
+	backend := getRedis()
 	if backend == nil {
 		t.Skip()
 	}

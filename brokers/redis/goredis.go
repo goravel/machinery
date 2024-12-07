@@ -116,7 +116,7 @@ func (b *Broker) StartConsuming(consumerTag string, concurrency int, taskProcess
 				close(deliveries)
 				return
 			case <-pool:
-				task, _ := b.nextTask(getQueueGR(b.GetConfig(), taskProcessor))
+				task, _ := b.nextTask(getQueue(b.GetConfig(), taskProcessor))
 				//TODO: should this error be ignored?
 				if len(task) > 0 {
 					deliveries <- task
@@ -312,7 +312,7 @@ func (b *Broker) consumeOne(delivery []byte, taskProcessor iface.TaskProcessor) 
 		}
 		log.INFO("Task not registered with this worker. Requeuing message: %s", delivery)
 
-		b.rclient.RPush(context.Background(), getQueueGR(b.GetConfig(), taskProcessor), delivery)
+		b.rclient.RPush(context.Background(), getQueue(b.GetConfig(), taskProcessor), delivery)
 		return nil
 	}
 
@@ -417,7 +417,7 @@ func (b *Broker) nextDelayedTask(key string) (result []byte, err error) {
 	return
 }
 
-func getQueueGR(config *config.Config, taskProcessor iface.TaskProcessor) string {
+func getQueue(config *config.Config, taskProcessor iface.TaskProcessor) string {
 	customQueue := taskProcessor.CustomQueue()
 	if customQueue == "" {
 		return config.DefaultQueue
