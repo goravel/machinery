@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/redis/go-redis/v9"
@@ -20,6 +21,7 @@ import (
 type Backend struct {
 	common.Backend
 	rclient redis.UniversalClient
+	mu      sync.Mutex
 }
 
 // New creates Backend instance
@@ -111,7 +113,8 @@ func (b *Backend) GroupTaskStates(groupUUID string, groupTaskCount int) ([]*task
 // whether the worker should trigger chord (true) or no if it has been triggered
 // already (false)
 func (b *Backend) TriggerChord(groupUUID string) (bool, error) {
-	// TODO need add a lock
+	b.mu.Lock()
+	defer b.mu.Unlock()
 
 	groupMeta, err := b.getGroupMeta(groupUUID)
 	if err != nil {
