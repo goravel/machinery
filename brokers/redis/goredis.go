@@ -26,13 +26,10 @@ const defaultRedisDelayedTasksKey = "delayed_tasks"
 // Broker represents a Redis broker
 type Broker struct {
 	common.Broker
-	rclient      redis.UniversalClient
-	consumingWG  sync.WaitGroup // wait group to make sure whole consumption completes
-	processingWG sync.WaitGroup // use wait group to make sure task processing completes
-	delayedWG    sync.WaitGroup
-	// If set, path to a socket file overrides hostname
-	socketPath           string
-	redisOnce            sync.Once
+	rclient              redis.UniversalClient
+	consumingWG          sync.WaitGroup // wait group to make sure whole consumption completes
+	processingWG         sync.WaitGroup // use wait group to make sure task processing completes
+	delayedWG            sync.WaitGroup
 	redisDelayedTasksKey string
 }
 
