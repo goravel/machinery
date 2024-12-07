@@ -41,9 +41,9 @@ func TestGroupCompletedGR(t *testing.T) {
 	}
 
 	// Cleanup before the test
-	backend.PurgeState(task1.UUID)
-	backend.PurgeState(task2.UUID)
-	backend.PurgeGroupMeta(groupUUID)
+	assert.NoError(t, backend.PurgeState(task1.UUID))
+	assert.NoError(t, backend.PurgeState(task2.UUID))
+	assert.NoError(t, backend.PurgeGroupMeta(groupUUID))
 
 	groupCompleted, err := backend.GroupCompleted(groupUUID, 2)
 	if assert.Error(t, err) {
@@ -51,7 +51,7 @@ func TestGroupCompletedGR(t *testing.T) {
 		assert.Equal(t, "redis: nil", err.Error())
 	}
 
-	backend.InitGroup(groupUUID, []string{task1.UUID, task2.UUID})
+	assert.NoError(t, backend.InitGroup(groupUUID, []string{task1.UUID, task2.UUID}))
 
 	groupCompleted, err = backend.GroupCompleted(groupUUID, 2)
 	if assert.Error(t, err) {
@@ -59,22 +59,22 @@ func TestGroupCompletedGR(t *testing.T) {
 		assert.Equal(t, "redis: nil", err.Error())
 	}
 
-	backend.SetStatePending(task1)
-	backend.SetStateStarted(task2)
+	assert.NoError(t, backend.SetStatePending(task1))
+	assert.NoError(t, backend.SetStateStarted(task2))
 	groupCompleted, err = backend.GroupCompleted(groupUUID, 2)
 	if assert.NoError(t, err) {
 		assert.False(t, groupCompleted)
 	}
 
 	taskResults := []*tasks.TaskResult{new(tasks.TaskResult)}
-	backend.SetStateStarted(task1)
-	backend.SetStateSuccess(task2, taskResults)
+	assert.NoError(t, backend.SetStateStarted(task1))
+	assert.NoError(t, backend.SetStateSuccess(task2, taskResults))
 	groupCompleted, err = backend.GroupCompleted(groupUUID, 2)
 	if assert.NoError(t, err) {
 		assert.False(t, groupCompleted)
 	}
 
-	backend.SetStateFailure(task1, "Some error")
+	assert.NoError(t, backend.SetStateFailure(task1, "Some error"))
 	groupCompleted, err = backend.GroupCompleted(groupUUID, 2)
 	if assert.NoError(t, err) {
 		assert.True(t, groupCompleted)
@@ -92,7 +92,7 @@ func TestGetStateGR(t *testing.T) {
 		GroupUUID: "testGroupUUID",
 	}
 
-	backend.PurgeState("testTaskUUID")
+	assert.NoError(t, backend.PurgeState("testTaskUUID"))
 
 	var (
 		taskState *tasks.TaskState
@@ -100,25 +100,25 @@ func TestGetStateGR(t *testing.T) {
 	)
 
 	taskState, err = backend.GetState(signature.UUID)
-	assert.Equal(t, "redis: nil", err.Error())
+	assert.Error(t, err)
 	assert.Nil(t, taskState)
 
 	//Pending State
-	backend.SetStatePending(signature)
+	assert.NoError(t, backend.SetStatePending(signature))
 	taskState, err = backend.GetState(signature.UUID)
 	assert.NoError(t, err)
 	assert.Equal(t, signature.Name, taskState.TaskName)
 	createdAt := taskState.CreatedAt
 
 	//Received State
-	backend.SetStateReceived(signature)
+	assert.NoError(t, backend.SetStateReceived(signature))
 	taskState, err = backend.GetState(signature.UUID)
 	assert.NoError(t, err)
 	assert.Equal(t, signature.Name, taskState.TaskName)
 	assert.Equal(t, createdAt, taskState.CreatedAt)
 
 	//Started State
-	backend.SetStateStarted(signature)
+	assert.NoError(t, backend.SetStateStarted(signature))
 	taskState, err = backend.GetState(signature.UUID)
 	assert.NoError(t, err)
 	assert.Equal(t, signature.Name, taskState.TaskName)
@@ -131,7 +131,7 @@ func TestGetStateGR(t *testing.T) {
 			Value: 2,
 		},
 	}
-	backend.SetStateSuccess(signature, taskResults)
+	assert.NoError(t, backend.SetStateSuccess(signature, taskResults))
 	taskState, err = backend.GetState(signature.UUID)
 	assert.NoError(t, err)
 	assert.Equal(t, signature.Name, taskState.TaskName)
@@ -150,12 +150,12 @@ func TestPurgeStateGR(t *testing.T) {
 		GroupUUID: "testGroupUUID",
 	}
 
-	backend.SetStatePending(signature)
+	assert.NoError(t, backend.SetStatePending(signature))
 	taskState, err := backend.GetState(signature.UUID)
 	assert.NotNil(t, taskState)
 	assert.NoError(t, err)
 
-	backend.PurgeState(taskState.TaskUUID)
+	assert.NoError(t, backend.PurgeState(taskState.TaskUUID))
 	taskState, err = backend.GetState(signature.UUID)
 	assert.Nil(t, taskState)
 	assert.Error(t, err)

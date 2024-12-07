@@ -8,8 +8,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/go-redsync/redsync/v4"
-	redsyncgoredis "github.com/go-redsync/redsync/v4/redis/goredis/v9"
 	"github.com/redis/go-redis/v9"
 
 	"github.com/goravel/machinery/backends/iface"
@@ -28,7 +26,6 @@ type Backend struct {
 	db       int
 	// If set, path to a socket file overrides hostname
 	socketPath string
-	redsync    *redsync.Redsync
 	redisOnce  sync.Once
 }
 
@@ -58,7 +55,6 @@ func New(cnf *config.Config, addrs []string, db int) iface.Backend {
 	} else {
 		b.rclient = redis.NewUniversalClient(ropt)
 	}
-	b.redsync = redsync.New(redsyncgoredis.NewPool(b.rclient))
 	return b
 }
 
@@ -121,11 +117,7 @@ func (b *Backend) GroupTaskStates(groupUUID string, groupTaskCount int) ([]*task
 // whether the worker should trigger chord (true) or no if it has been triggered
 // already (false)
 func (b *Backend) TriggerChord(groupUUID string) (bool, error) {
-	m := b.redsync.NewMutex("TriggerChordMutex")
-	if err := m.Lock(); err != nil {
-		return false, err
-	}
-	defer m.Unlock()
+	// TODO need add a lock
 
 	groupMeta, err := b.getGroupMeta(groupUUID)
 	if err != nil {

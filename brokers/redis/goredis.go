@@ -11,7 +11,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/go-redsync/redsync/v4"
 	"github.com/redis/go-redis/v9"
 
 	"github.com/goravel/machinery/brokers/errs"
@@ -33,7 +32,6 @@ type Broker struct {
 	delayedWG    sync.WaitGroup
 	// If set, path to a socket file overrides hostname
 	socketPath           string
-	redsync              *redsync.Redsync
 	redisOnce            sync.Once
 	redisDelayedTasksKey string
 }

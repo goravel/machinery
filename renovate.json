@@ -1,0 +1,31 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "labels": [
+    "🤖 Dependencies"
+  ],
+  "commitMessagePrefix": "chore(deps): ",
+  "postUpdateOptions": [
+    "gomodTidy"
+  ],
+  "packageRules": [
+    {
+      "groupName": "all dependencies",
+      "groupSlug": "all",
+      "description": "Automerge updates",
+      "matchPackageNames": [
+        "*"
+      ],
+      "matchUpdateTypes": [
+        "digest",
+        "patch",
+        "minor",
+        "major"
+      ],
+      "automerge": true
+    }
+  ],
+  "ignoreDeps": []
+}
