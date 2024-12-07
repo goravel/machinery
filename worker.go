@@ -30,9 +30,9 @@ type Worker struct {
 
 var (
 	// ErrWorkerQuitGracefully is return when worker quit gracefully
-	ErrWorkerQuitGracefully = errors.New("Worker quit gracefully")
-	// ErrWorkerQuitGracefully is return when worker quit abruptly
-	ErrWorkerQuitAbruptly = errors.New("Worker quit abruptly")
+	ErrWorkerQuitGracefully = errors.New("worker quit gracefully")
+	// ErrWorkerQuitAbruptly is return when worker quit abruptly
+	ErrWorkerQuitAbruptly = errors.New("worker quit abruptly")
 )
 
 // Launch starts a new worker process. The worker subscribes
@@ -64,9 +64,9 @@ func (worker *Worker) LaunchAsync(errorsChan chan<- error) {
 	// Goroutine to start broker consumption and handle retries when broker connection dies
 	go func() {
 		for {
-			retry, err := broker.StartConsuming(worker.ConsumerTag, worker.Concurrency, worker)
+			re, err := broker.StartConsuming(worker.ConsumerTag, worker.Concurrency, worker)
 
-			if retry {
+			if re {
 				if worker.errorHandler != nil {
 					worker.errorHandler(err)
 				} else {
@@ -141,7 +141,7 @@ func (worker *Worker) Process(signature *tasks.Signature) error {
 	// if this failed, it means the task is malformed, probably has invalid
 	// signature, go directly to task failed without checking whether to retry
 	if err != nil {
-		worker.taskFailed(signature, err)
+		_ = worker.taskFailed(signature, err)
 		return err
 	}
 
@@ -245,7 +245,7 @@ func (worker *Worker) taskSucceeded(signature *tasks.Signature, taskResults []*t
 	// Trigger success callbacks
 
 	for _, successTask := range signature.OnSuccess {
-		if signature.Immutable == false {
+		if !signature.Immutable {
 			// Pass results of the task to success callbacks
 			for _, taskResult := range taskResults {
 				successTask.Args = append(successTask.Args, tasks.Arg{
@@ -255,7 +255,7 @@ func (worker *Worker) taskSucceeded(signature *tasks.Signature, taskResults []*t
 			}
 		}
 
-		worker.server.SendTask(successTask)
+		_, _ = worker.server.SendTask(successTask)
 	}
 
 	// If the task was not part of a group, just return
@@ -314,7 +314,7 @@ func (worker *Worker) taskSucceeded(signature *tasks.Signature, taskResults []*t
 			return nil
 		}
 
-		if signature.ChordCallback.Immutable == false {
+		if !signature.ChordCallback.Immutable {
 			// Pass results of the task to the chord callback
 			for _, taskResult := range taskState.Results {
 				signature.ChordCallback.Args = append(signature.ChordCallback.Args, tasks.Arg{
@@ -355,7 +355,7 @@ func (worker *Worker) taskFailed(signature *tasks.Signature, taskErr error) erro
 			Value: taskErr.Error(),
 		}}, errorTask.Args...)
 		errorTask.Args = args
-		worker.server.SendTask(errorTask)
+		_, _ = worker.server.SendTask(errorTask)
 	}
 
 	if signature.StopTaskDeletionOnError {

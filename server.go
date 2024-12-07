@@ -196,7 +196,7 @@ func (server *Server) SendChain(chain *tasks.Chain) (*result.ChainAsyncResult, e
 func (server *Server) SendGroupWithContext(ctx context.Context, group *tasks.Group, sendConcurrency int) ([]*result.AsyncResult, error) {
 	// Make sure result backend is defined
 	if server.backend == nil {
-		return nil, errors.New("Result backend required")
+		return nil, errors.New("result backend required")
 	}
 
 	asyncResults := make([]*result.AsyncResult, len(group.Tasks))
@@ -206,7 +206,9 @@ func (server *Server) SendGroupWithContext(ctx context.Context, group *tasks.Gro
 	errorsChan := make(chan error, len(group.Tasks)*2)
 
 	// Init group
-	server.backend.InitGroup(group.GroupUUID, group.GetUUIDs())
+	if err := server.backend.InitGroup(group.GroupUUID, group.GetUUIDs()); err != nil {
+		return nil, err
+	}
 
 	// Init the tasks Pending state first
 	for _, signature := range group.Tasks {

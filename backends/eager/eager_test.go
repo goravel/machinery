@@ -37,7 +37,7 @@ func (s *EagerBackendTestSuite) SetupSuite() {
 	}
 
 	for _, t := range s.st {
-		s.backend.SetStatePending(t)
+		s.NoError(s.backend.SetStatePending(t))
 	}
 
 	// groups
@@ -62,7 +62,7 @@ func (s *EagerBackendTestSuite) SetupSuite() {
 			s.st = append(s.st, sig)
 
 			// default state is pending
-			s.backend.SetStatePending(sig)
+			s.NoError(s.backend.SetStatePending(sig))
 		}
 
 		s.Nil(s.backend.InitGroup(g.id, g.tasks))
@@ -107,7 +107,7 @@ func (s *EagerBackendTestSuite) TestGroupCompleted() {
 				break
 			}
 
-			s.backend.SetStateSuccess(t, nil)
+			s.NoError(s.backend.SetStateSuccess(t, nil))
 		}
 
 		completed, err = s.backend.GroupCompleted(g.id, len(g.tasks))
@@ -131,7 +131,7 @@ func (s *EagerBackendTestSuite) TestGroupCompleted() {
 				break
 			}
 
-			s.backend.SetStateFailure(t, "just a test")
+			s.NoError(s.backend.SetStateFailure(t, "just a test"))
 		}
 
 		completed, err = s.backend.GroupCompleted(g.id, len(g.tasks))
@@ -160,7 +160,7 @@ func (s *EagerBackendTestSuite) TestGroupTaskStates() {
 				break
 			}
 
-			s.backend.SetStateFailure(t, t.UUID)
+			s.NoError(s.backend.SetStateFailure(t, t.UUID))
 		}
 
 		// get states back
@@ -186,10 +186,10 @@ func (s *EagerBackendTestSuite) TestSetStatePending() {
 		t := s.st[0]
 
 		// change this state to receiving
-		s.backend.SetStateReceived(t)
+		s.NoError(s.backend.SetStateReceived(t))
 
 		// change it back to pending
-		s.backend.SetStatePending(t)
+		s.NoError(s.backend.SetStatePending(t))
 
 		st, err := s.backend.GetState(t.UUID)
 		s.Nil(err)
@@ -203,7 +203,7 @@ func (s *EagerBackendTestSuite) TestSetStateReceived() {
 	// task2
 	{
 		t := s.st[1]
-		s.backend.SetStateReceived(t)
+		s.NoError(s.backend.SetStateReceived(t))
 		st, err := s.backend.GetState(t.UUID)
 		s.Nil(err)
 		if st != nil {
@@ -216,7 +216,7 @@ func (s *EagerBackendTestSuite) TestSetStateStarted() {
 	// task3
 	{
 		t := s.st[2]
-		s.backend.SetStateStarted(t)
+		s.NoError(s.backend.SetStateStarted(t))
 		st, err := s.backend.GetState(t.UUID)
 		s.Nil(err)
 		if st != nil {
@@ -235,7 +235,7 @@ func (s *EagerBackendTestSuite) TestSetStateSuccess() {
 				Value: json.Number("300.0"),
 			},
 		}
-		s.backend.SetStateSuccess(t, taskResults)
+		s.NoError(s.backend.SetStateSuccess(t, taskResults))
 		st, err := s.backend.GetState(t.UUID)
 		s.Nil(err)
 		s.NotNil(st)
@@ -249,7 +249,7 @@ func (s *EagerBackendTestSuite) TestSetStateFailure() {
 	// task5
 	{
 		t := s.st[4]
-		s.backend.SetStateFailure(t, "error")
+		s.NoError(s.backend.SetStateFailure(t, "error"))
 		st, err := s.backend.GetState(t.UUID)
 		s.Nil(err)
 		if st != nil {
@@ -263,7 +263,7 @@ func (s *EagerBackendTestSuite) TestSetStateRetry() {
 	// task6
 	{
 		t := s.st[5]
-		s.backend.SetStateRetry(t)
+		s.NoError(s.backend.SetStateRetry(t))
 		st, err := s.backend.GetState(t.UUID)
 		s.Nil(err)
 		if st != nil {

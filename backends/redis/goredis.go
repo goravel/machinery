@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/redis/go-redis/v9"
@@ -20,13 +19,7 @@ import (
 // Backend represents a Redis result backend
 type Backend struct {
 	common.Backend
-	rclient  redis.UniversalClient
-	host     string
-	password string
-	db       int
-	// If set, path to a socket file overrides hostname
-	socketPath string
-	redisOnce  sync.Once
+	rclient redis.UniversalClient
 }
 
 // New creates Backend instance
@@ -35,16 +28,17 @@ func New(cnf *config.Config, addrs []string, db int) iface.Backend {
 		Backend: common.NewBackend(cnf),
 	}
 	parts := strings.Split(addrs[0], "@")
+	password := ""
 	if len(parts) >= 2 {
 		// with passwrod
-		b.password = strings.Join(parts[:len(parts)-1], "@")
+		password = strings.Join(parts[:len(parts)-1], "@")
 		addrs[0] = parts[len(parts)-1] // addr is the last one without @
 	}
 
 	ropt := &redis.UniversalOptions{
 		Addrs:    addrs,
 		DB:       db,
-		Password: b.password,
+		Password: password,
 	}
 	if cnf.Redis != nil {
 		ropt.MasterName = cnf.Redis.MasterName
