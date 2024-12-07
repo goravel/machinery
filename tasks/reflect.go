@@ -47,7 +47,7 @@ var (
 
 	ctxType = reflect.TypeOf((*context.Context)(nil)).Elem()
 
-	typeConversionError = func(argValue interface{}, argTypeStr string) error {
+	typeConversionError = func(argValue any, argTypeStr string) error {
 		return fmt.Errorf("%v is not %v", argValue, argTypeStr)
 	}
 )
@@ -67,8 +67,8 @@ func (e ErrUnsupportedType) Error() string {
 	return fmt.Sprintf("%v is not one of supported types", e.valueType)
 }
 
-// ReflectValue converts interface{} to reflect.Value based on string type
-func ReflectValue(valueType string, value interface{}) (reflect.Value, error) {
+// ReflectValue converts any to reflect.Value based on string type
+func ReflectValue(valueType string, value any) (reflect.Value, error) {
 	if strings.HasPrefix(valueType, "[]") {
 		return reflectValues(valueType, value)
 	}
@@ -76,9 +76,9 @@ func ReflectValue(valueType string, value interface{}) (reflect.Value, error) {
 	return reflectValue(valueType, value)
 }
 
-// reflectValue converts interface{} to reflect.Value based on string type
+// reflectValue converts any to reflect.Value based on string type
 // representing a base type (not a slice)
-func reflectValue(valueType string, value interface{}) (reflect.Value, error) {
+func reflectValue(valueType string, value any) (reflect.Value, error) {
 	theType, ok := typesMap[valueType]
 	if !ok {
 		return reflect.Value{}, NewErrUnsupportedType(valueType)
@@ -143,9 +143,9 @@ func reflectValue(valueType string, value interface{}) (reflect.Value, error) {
 	return reflect.Value{}, NewErrUnsupportedType(valueType)
 }
 
-// reflectValues converts interface{} to reflect.Value based on string type
+// reflectValues converts any to reflect.Value based on string type
 // representing a slice of values
-func reflectValues(valueType string, value interface{}) (reflect.Value, error) {
+func reflectValues(valueType string, value any) (reflect.Value, error) {
 	theType, ok := typesMap[valueType]
 	if !ok {
 		return reflect.Value{}, NewErrUnsupportedType(valueType)
@@ -258,7 +258,7 @@ func reflectValues(valueType string, value interface{}) (reflect.Value, error) {
 	return reflect.Value{}, NewErrUnsupportedType(valueType)
 }
 
-func getBoolValue(theType string, value interface{}) (bool, error) {
+func getBoolValue(theType string, value any) (bool, error) {
 	b, ok := value.(bool)
 	if !ok {
 		return false, typeConversionError(value, typesMap[theType].String())
@@ -267,7 +267,7 @@ func getBoolValue(theType string, value interface{}) (bool, error) {
 	return b, nil
 }
 
-func getIntValue(theType string, value interface{}) (int64, error) {
+func getIntValue(theType string, value any) (int64, error) {
 	// We use https://golang.org/pkg/encoding/json/#Decoder.UseNumber when unmarshaling signatures.
 	// This is because JSON only supports 64-bit floating point numbers and we could lose precision
 	// when converting from float64 to signed integer
@@ -288,7 +288,7 @@ func getIntValue(theType string, value interface{}) (int64, error) {
 	return n, nil
 }
 
-func getUintValue(theType string, value interface{}) (uint64, error) {
+func getUintValue(theType string, value any) (uint64, error) {
 	// Losing precision only happens in receiving a JSON number from a language like js,
 	// and receiving a large uint number from golang or python could cause json.Number.Int64 be turned into a panic.
 	// So we use strconv.ParseUint to correctly parse a uint value.
@@ -318,7 +318,7 @@ func getUintValue(theType string, value interface{}) (uint64, error) {
 	return n, nil
 }
 
-func getFloatValue(theType string, value interface{}) (float64, error) {
+func getFloatValue(theType string, value any) (float64, error) {
 	// We use https://golang.org/pkg/encoding/json/#Decoder.UseNumber when unmarshaling signatures.
 	// This is because JSON only supports 64-bit floating point numbers and we could lose precision
 	if strings.HasPrefix(fmt.Sprintf("%T", value), "json.Number") {
@@ -338,7 +338,7 @@ func getFloatValue(theType string, value interface{}) (float64, error) {
 	return f, nil
 }
 
-func getStringValue(theType string, value interface{}) (string, error) {
+func getStringValue(theType string, value any) (string, error) {
 	s, ok := value.(string)
 	if !ok {
 		return "", typeConversionError(value, typesMap[theType].String())

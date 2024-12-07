@@ -42,7 +42,7 @@ func SignatureFromContext(ctx context.Context) *Signature {
 }
 
 // NewWithSignature is the same as New but injects the signature
-func NewWithSignature(taskFunc interface{}, signature *Signature) (*Task, error) {
+func NewWithSignature(taskFunc any, signature *Signature) (*Task, error) {
 	args := signature.Args
 	ctx := context.Background()
 	ctx = context.WithValue(ctx, signatureCtx, signature)
@@ -68,7 +68,7 @@ func NewWithSignature(taskFunc interface{}, signature *Signature) (*Task, error)
 
 // New tries to use reflection to convert the function and arguments
 // into a reflect.Value and prepare it for invocation
-func New(taskFunc interface{}, args []Arg) (*Task, error) {
+func New(taskFunc any, args []Arg) (*Task, error) {
 	task := &Task{
 		TaskFunc: reflect.ValueOf(taskFunc),
 		Context:  context.Background(),

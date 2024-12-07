@@ -25,7 +25,7 @@ func TestTaskCallErrorTest(t *testing.T) {
 	results, err := task.Call()
 	assert.Nil(t, results)
 	assert.NotNil(t, err)
-	_, ok := interface{}(err).(tasks.ErrRetryTaskLater)
+	_, ok := any(err).(tasks.ErrRetryTaskLater)
 	assert.True(t, ok, "Error should be castable to tasks.ErrRetryTaskLater")
 
 	// Create test task that returns a standard error
@@ -82,7 +82,7 @@ func TestTaskCallInterfaceValuedResult(t *testing.T) {
 	t.Parallel()
 
 	// Create a test task function
-	f := func() (interface{}, error) { return math.Pi, nil }
+	f := func() (any, error) { return math.Pi, nil }
 
 	task, err := tasks.New(f, []tasks.Arg{})
 	assert.NoError(t, err)
@@ -96,7 +96,7 @@ func TestTaskCallInterfaceValuedResult(t *testing.T) {
 func TestTaskCallWithContext(t *testing.T) {
 	t.Parallel()
 
-	f := func(c context.Context) (interface{}, error) {
+	f := func(c context.Context) (any, error) {
 		assert.NotNil(t, c)
 		assert.Nil(t, tasks.SignatureFromContext(c))
 		return math.Pi, nil
@@ -112,7 +112,7 @@ func TestTaskCallWithContext(t *testing.T) {
 func TestTaskCallWithSignatureInContext(t *testing.T) {
 	t.Parallel()
 
-	f := func(c context.Context) (interface{}, error) {
+	f := func(c context.Context) (any, error) {
 		assert.NotNil(t, c)
 		signature := tasks.SignatureFromContext(c)
 		assert.NotNil(t, signature)

@@ -16,11 +16,11 @@ func TestNewChain(t *testing.T) {
 		Args: []tasks.Arg{
 			{
 				Type:  "float64",
-				Value: interface{}(1),
+				Value: any(1),
 			},
 			{
 				Type:  "float64",
-				Value: interface{}(1),
+				Value: any(1),
 			},
 		},
 	}
@@ -30,11 +30,11 @@ func TestNewChain(t *testing.T) {
 		Args: []tasks.Arg{
 			{
 				Type:  "float64",
-				Value: interface{}(5),
+				Value: any(5),
 			},
 			{
 				Type:  "float64",
-				Value: interface{}(6),
+				Value: any(6),
 			},
 		},
 	}
@@ -44,7 +44,7 @@ func TestNewChain(t *testing.T) {
 		Args: []tasks.Arg{
 			{
 				Type:  "float64",
-				Value: interface{}(4),
+				Value: any(4),
 			},
 		},
 	}

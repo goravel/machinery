@@ -11,9 +11,9 @@ import (
 
 // Arg represents a single argument passed to invocation fo a task
 type Arg struct {
-	Name  string      `bson:"name"`
-	Type  string      `bson:"type"`
-	Value interface{} `bson:"value"`
+	Name  string `bson:"name"`
+	Type  string `bson:"type"`
+	Value any    `bson:"value"`
 }
 
 // Signature represents a single task invocation

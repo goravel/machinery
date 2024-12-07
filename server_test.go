@@ -16,13 +16,23 @@ func TestRegisterTasks(t *testing.T) {
 	t.Parallel()
 
 	server := getTestServer(t)
-	err := server.RegisterTasks(map[string]interface{}{
+	err := server.RegisterTasks(map[string]any{
 		"test_task": func() error { return nil },
 	})
 	assert.NoError(t, err)
 
 	_, err = server.GetRegisteredTask("test_task")
 	assert.NoError(t, err, "test_task is not registered but it should be")
+}
+
+func BenchmarkRegisterTasks(b *testing.B) {
+	server := getTestServer(nil)
+
+	for i := 0; i < b.N; i++ {
+		_ = server.RegisterTasks(map[string]any{
+			"test_task": func() error { return nil },
+		})
+	}
 }
 
 func TestRegisterTask(t *testing.T) {
@@ -34,6 +44,14 @@ func TestRegisterTask(t *testing.T) {
 
 	_, err = server.GetRegisteredTask("test_task")
 	assert.NoError(t, err, "test_task is not registered but it should be")
+}
+
+func BenchmarkRegisterTask(b *testing.B) {
+	server := getTestServer(nil)
+
+	for i := 0; i < b.N; i++ {
+		_ = server.RegisterTask("test_task", func() error { return nil })
+	}
 }
 
 func TestGetRegisteredTask(t *testing.T) {

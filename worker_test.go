@@ -11,9 +11,17 @@ import (
 func TestRedactURL(t *testing.T) {
 	t.Parallel()
 
-	broker := "amqp://guest:guest@localhost:5672"
+	broker := "redis://:password@localhost:6379/0"
 	redactedURL := machinery.RedactURL(broker)
-	assert.Equal(t, "amqp://localhost:5672", redactedURL)
+	assert.Equal(t, "redis://localhost:6379", redactedURL)
+}
+
+func BenchmarkRedactURL(b *testing.B) {
+	broker := "redis://:password@localhost:6379/0"
+
+	for i := 0; i < b.N; i++ {
+		_ = machinery.RedactURL(broker)
+	}
 }
 
 func TestPreConsumeHandler(t *testing.T) {

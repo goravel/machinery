@@ -11,9 +11,9 @@ import (
 var (
 	reflectValuesTestCases = []struct {
 		name          string
-		value         interface{}
+		value         any
 		expectedType  string
-		expectedValue interface{}
+		expectedValue any
 	}{
 		// basic types
 		{
@@ -108,85 +108,85 @@ var (
 		// slices
 		{
 			name:          "[]bool",
-			value:         []interface{}{false, true},
+			value:         []any{false, true},
 			expectedType:  "[]bool",
 			expectedValue: []bool{false, true},
 		},
 		{
 			name:          "[]int",
-			value:         []interface{}{json.Number("1"), json.Number("2")},
+			value:         []any{json.Number("1"), json.Number("2")},
 			expectedType:  "[]int",
 			expectedValue: []int{1, 2},
 		},
 		{
 			name:          "[]int8",
-			value:         []interface{}{json.Number("1"), json.Number("2")},
+			value:         []any{json.Number("1"), json.Number("2")},
 			expectedType:  "[]int8",
 			expectedValue: []int8{1, 2},
 		},
 		{
 			name:          "[]int16",
-			value:         []interface{}{json.Number("1"), json.Number("2")},
+			value:         []any{json.Number("1"), json.Number("2")},
 			expectedType:  "[]int16",
 			expectedValue: []int16{1, 2},
 		},
 		{
 			name:          "[]int32",
-			value:         []interface{}{json.Number("1"), json.Number("2")},
+			value:         []any{json.Number("1"), json.Number("2")},
 			expectedType:  "[]int32",
 			expectedValue: []int32{1, 2},
 		},
 		{
 			name:          "[]int64",
-			value:         []interface{}{json.Number("1"), json.Number("2")},
+			value:         []any{json.Number("1"), json.Number("2")},
 			expectedType:  "[]int64",
 			expectedValue: []int64{1, 2},
 		},
 		{
 			name:          "[]uint",
-			value:         []interface{}{json.Number("1"), json.Number("2")},
+			value:         []any{json.Number("1"), json.Number("2")},
 			expectedType:  "[]uint",
 			expectedValue: []uint{1, 2},
 		},
 		{
 			name:          "[]uint8",
-			value:         []interface{}{json.Number("1"), json.Number("2")},
+			value:         []any{json.Number("1"), json.Number("2")},
 			expectedType:  "[]uint8",
 			expectedValue: []uint8{1, 2},
 		},
 		{
 			name:          "[]uint16",
-			value:         []interface{}{json.Number("1"), json.Number("2")},
+			value:         []any{json.Number("1"), json.Number("2")},
 			expectedType:  "[]uint16",
 			expectedValue: []uint16{1, 2},
 		},
 		{
 			name:          "[]uint32",
-			value:         []interface{}{json.Number("1"), json.Number("2")},
+			value:         []any{json.Number("1"), json.Number("2")},
 			expectedType:  "[]uint32",
 			expectedValue: []uint32{1, 2},
 		},
 		{
 			name:          "[]uint64",
-			value:         []interface{}{json.Number("1"), json.Number("2")},
+			value:         []any{json.Number("1"), json.Number("2")},
 			expectedType:  "[]uint64",
 			expectedValue: []uint64{1, 2},
 		},
 		{
 			name:          "[]float32",
-			value:         []interface{}{json.Number("0.5"), json.Number("1.28")},
+			value:         []any{json.Number("0.5"), json.Number("1.28")},
 			expectedType:  "[]float32",
 			expectedValue: []float32{0.5, 1.28},
 		},
 		{
 			name:          "[]float64",
-			value:         []interface{}{json.Number("0.5"), json.Number("1.28")},
+			value:         []any{json.Number("0.5"), json.Number("1.28")},
 			expectedType:  "[]float64",
 			expectedValue: []float64{0.5, 1.28},
 		},
 		{
 			name:          "[]string",
-			value:         []interface{}{"foo", "bar"},
+			value:         []any{"foo", "bar"},
 			expectedType:  "[]string",
 			expectedValue: []string{"foo", "bar"},
 		},

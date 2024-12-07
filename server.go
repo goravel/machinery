@@ -105,7 +105,7 @@ func (server *Server) SetPreTaskHandler(handler func(*tasks.Signature)) {
 }
 
 // RegisterTasks registers all tasks at once
-func (server *Server) RegisterTasks(namedTaskFuncs map[string]interface{}) error {
+func (server *Server) RegisterTasks(namedTaskFuncs map[string]any) error {
 	for _, task := range namedTaskFuncs {
 		if err := tasks.ValidateTask(task); err != nil {
 			return err
@@ -119,7 +119,7 @@ func (server *Server) RegisterTasks(namedTaskFuncs map[string]interface{}) error
 }
 
 // RegisterTask registers a single task
-func (server *Server) RegisterTask(name string, taskFunc interface{}) error {
+func (server *Server) RegisterTask(name string, taskFunc any) error {
 	if err := tasks.ValidateTask(taskFunc); err != nil {
 		return err
 	}
@@ -135,7 +135,7 @@ func (server *Server) IsTaskRegistered(name string) bool {
 }
 
 // GetRegisteredTask returns registered task by name
-func (server *Server) GetRegisteredTask(name string) (interface{}, error) {
+func (server *Server) GetRegisteredTask(name string) (any, error) {
 	taskFunc, ok := server.registeredTasks.Load(name)
 	if !ok {
 		return nil, fmt.Errorf("Task not registered error: %s", name)
@@ -293,7 +293,7 @@ func (server *Server) SendChord(chord *tasks.Chord, sendConcurrency int) (*resul
 func (server *Server) GetRegisteredTaskNames() []string {
 	taskNames := make([]string, 0)
 
-	server.registeredTasks.Range(func(key, value interface{}) bool {
+	server.registeredTasks.Range(func(key, value any) bool {
 		taskNames = append(taskNames, key.(string))
 		return true
 	})

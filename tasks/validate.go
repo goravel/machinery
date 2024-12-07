@@ -17,7 +17,7 @@ var (
 // ValidateTask validates task function using reflection and makes sure
 // it has a proper signature. Functions used as tasks must return at least a
 // single value and the last return type must be error
-func ValidateTask(task interface{}) error {
+func ValidateTask(task any) error {
 	v := reflect.ValueOf(task)
 	t := v.Type()
 
